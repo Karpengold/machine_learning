@@ -73,7 +73,7 @@ plt.ylabel('Exam 2')
 plt.legend((ok, fail), ('Passed', 'Not passed'))
 plt.show()
 
-3
+#3
 X.insert(0, 'Ones', 1)
 theta = gradient_descent(X.values, y.values, np.array([0, 0, 0]))
 print(theta)
