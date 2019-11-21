@@ -56,7 +56,8 @@ def gradient_descent(X, y, w, learning_rate=0.0001, k=0.005, steps=105000):
 
 
 def predict_student_exam(X, theta):
-    return sig(np.dot(X.T, theta))
+    h = sig(np.dot(X.T, theta))
+    return h >=0.5
 
 #1
 data = pd.read_csv('ex2data1.txt', header=None)
@@ -94,14 +95,13 @@ print(theta_optimized)
 print(loss(theta_optimized, X, y))
 
 #5
-print('Predicted exam result: ', predict_student_exam(X.values[0], theta_optimized))
+print('Predicted exam result: ',predict_student_exam(X.values[0], theta_optimized) )
+
 #6
 x1 = np.array([np.min(X[0]), np.max(X[1])])
 x2 = (-1 / theta_optimized[2]) * (x1 * theta_optimized[1]) + offset
 #plt.plot(x1, x2)
 #plt.show()
-
-
 
 #7
 data = pd.read_csv('ex2data2.txt', header=None)
