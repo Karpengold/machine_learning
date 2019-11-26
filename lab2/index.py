@@ -9,7 +9,6 @@ offset = 125
 
 
 def predict_number(theta_arr, x):
-
     return np.dot(x, np.array(theta_arr).T)
 
 def sig(z):
@@ -20,23 +19,20 @@ def loss(w, X, y):
     h = sig(np.dot(X, w))
     return (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()
 
-def loss_L2(theta, X,y, k=0.0):
+def loss_regularized(theta, X,y, k=0.0):
     h = sig(np.dot(X, theta))
     return (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean() + (k / (2 * m)) * np.sum(theta[1:]**2)
 
 def gradient(w, X, y):
     h = sig(np.dot(X, w))
     return np.dot(X.T, (h - y)) / len(y)
+
 def gradient_regularized(theta, X, y, k):
     m = len(y)
     grad = gradient(theta, X ,y)
     grad[1:] = grad[1:]+ (k / m) * theta[1:]
     return grad
-def gradient_regularized1(theta, X, y, k=0):
-    m = len(y)
-    grad = (1 / m) * np.dot(X.T, (sig(np.dot(X, theta)) - y))
-    grad[1:] = grad[1:] + ((2*k) / m) * theta[1:]
-    return grad
+
 
 def normalize(X):
     min_max_scaler = preprocessing.MinMaxScaler()
@@ -55,7 +51,7 @@ def gradient_descent(X, y, w, learning_rate=0.0001, k=0.005, steps=105000):
     return next_w
 
 
-def predict_student_exam(X, theta):
+def predict(X, theta):
     h = sig(np.dot(X.T, theta))
     return h >=0.5
 
@@ -73,13 +69,14 @@ ok = plt.scatter(X[true_indexes][0].values, X[true_indexes][1].values)
 plt.xlabel('Exam 1')
 plt.ylabel('Exam 2')
 plt.legend((ok, fail), ('Passed', 'Not passed'))
-#plt.show()
+plt.show()
 
 #3
 X.insert(0, 'Ones', 1)
 theta = gradient_descent(X.values, y.values, np.array([0, 0, 0]))
 print(theta)
 print(loss(theta, X, y))
+
 #4
 
 temp = optimize.minimize(loss, np.array([0, 0, 0]), (X, y), method='Nelder-Mead')
@@ -95,13 +92,13 @@ print(theta_optimized)
 print(loss(theta_optimized, X, y))
 
 #5
-print('Predicted exam result: ',predict_student_exam(X.values[0], theta_optimized) )
+print('Predicted exam result: ', predict(X.values[0], theta_optimized) )
 
 #6
 x1 = np.array([np.min(X[0]), np.max(X[1])])
 x2 = (-1 / theta_optimized[2]) * (x1 * theta_optimized[1]) + offset
-#plt.plot(x1, x2)
-#plt.show()
+plt.plot(x1, x2)
+plt.show()
 
 #7
 data = pd.read_csv('ex2data2.txt', header=None)
@@ -119,8 +116,7 @@ not_psd = plt.scatter(X[fail][0].values, X[fail][1].values)
 plt.xlabel('Test 1')
 plt.ylabel('Test 2')
 plt.legend((psd, not_psd), ('Passed', 'Failed'))
-
-
+plt.show()
 
 #9
 def polynom_combs(x1, x2):
@@ -148,7 +144,7 @@ theta = np.zeros((n , 1))
 X = X_combs
 
 theta_tnc = optimize.fmin_tnc(
-    func=loss_L2,
+    func=loss_regularized,
     x0=theta.flatten(),
     fprime=gradient_regularized,
     args=(X, y,  0.1)
@@ -157,12 +153,12 @@ print('TNC theta: ', theta_tnc[0])
 print('TNC loss:' ,loss(theta_tnc[0], X, y))
 
 #11
-theta_nm = optimize.minimize(loss_L2, theta.flatten(), (X, y, 0.1), method='Nelder-Mead')
+theta_nm = optimize.minimize(loss_regularized, theta.flatten(), (X, y, 0.1), method='Nelder-Mead')
 print('Nelder-Mead theta: ', theta_nm.x)
 print('Nelder-Mead loss:' ,loss(theta_nm.x, X, y))
 
 theta_bfgs = optimize.fmin_bfgs(
-    loss_L2,
+    loss_regularized,
     theta.flatten(),
     gradient_regularized,
     (X, y, 0.01)
@@ -176,13 +172,13 @@ print('Predictions: ', sig(np.dot(X.values[0].T, theta_bfgs)))
 
 #13, 14
 theta_bfgs2 = optimize.fmin_bfgs(
-    loss_L2,
+    loss_regularized,
     theta.flatten(),
     gradient_regularized,
     (X, y, 0.001)
 )
 theta_bfgs3 = optimize.fmin_bfgs(
-    loss_L2,
+    loss_regularized,
     theta.flatten(),
     gradient_regularized,
     (X, y, 0.1)
@@ -258,8 +254,8 @@ print("F_loss ", loss(theta, X, y))
 print("Gradient F_loss ", gradient(theta, X, y))
 
 #18
-print("Loss L2 ", loss_L2(theta, X, y, 0.01))
-print("Gradient F_loss ", gradient_regularized(theta, X, y, 0.01))
+print("Loss regularized ", loss_regularized(theta, X, y, 0.01))
+print("Gradient regularized F_loss ", gradient_regularized(theta, X, y, 0.01))
 
 #19
 theta_arr = []*10
@@ -268,7 +264,7 @@ for i in range (0, 10):
     print(i)
     digit_class = i if i else 10
     theta_temp = optimize.fmin_bfgs(
-        loss_L2,
+        loss_regularized,
         theta.flatten(),
         gradient_regularized,
         (X, (y == digit_class).flatten().astype(np.int), 0.1)
