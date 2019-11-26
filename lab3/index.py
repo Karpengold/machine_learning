@@ -4,11 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import optimize
 
-def polynom(x, degree):
-    X_poly = np.zeros(shape=(len(x), degree))
-    for i in range(0, degree):
-        X_poly[:, i] = x.squeeze() ** (i + 1)
-    return X_poly
 
 def add_params(X_original, p=0):
     X_copy = X_original.copy()
@@ -66,7 +61,6 @@ x_train = pd.DataFrame(dataset["X"])
 x_val = pd.DataFrame(dataset["Xval"])
 x_test = pd.DataFrame(dataset["Xtest"])
 
-
 y_train = dataset["y"].squeeze()
 y_val = dataset["yval"].squeeze()
 y_test = dataset["ytest"].squeeze()
@@ -80,11 +74,10 @@ plt.xlabel("water level", fontsize=14)
 plt.ylabel("out", fontsize=14)
 plt.show()
 
+# 3
 x_train_ones = x_train.copy()
 x_train_ones.insert(0, 'Ones', 1)
 theta = np.zeros(x_train_ones.shape[1])
-
-# 3
 print('Floss: ', loss(theta, x_train_ones, y_train, 0))
 
 # 4
@@ -98,7 +91,9 @@ theta_bfgs = optimize.fmin_bfgs(
     gradient,
     (x_train_ones.values, y_train, 0)
 )
-print(loss(theta_bfgs, x_train_ones, y_train, 0))
+print('Theta: ', theta_bfgs)
+print('Loss: ', loss(theta_bfgs, x_train_ones, y_train, 0))
+
 h = np.dot(x_train_ones, theta_bfgs)
 fig, ax = plt.subplots()
 plt.title('1')
@@ -113,12 +108,15 @@ learning_curves_chart(x_train_ones.values, y_train, x_val_ones.values, y_val, 0)
 
 # 7,8
 
-x_scaled =add_params(x_train, 8)
-train_means = x_scaled.mean(axis=0)
-train_std = np.std(x_scaled, axis=0, ddof=1)
-x_scaled = normalize(x_scaled)
-
+x_poly =add_params(x_train, 8)
+train_means = x_poly.mean(axis=0)
+train_std = np.std(x_poly, axis=0, ddof=1)
+x_scaled = normalize(x_poly)
 x_scaled.insert(0, 'Ones', 1)
+
+
+
+# 9
 theta = np.zeros(x_scaled.shape[1])
 theta_bfgs_scaled =  theta_bfgs = optimize.fmin_bfgs(
     loss,
@@ -126,9 +124,6 @@ theta_bfgs_scaled =  theta_bfgs = optimize.fmin_bfgs(
     gradient,
     (x_scaled.values, y_train, 0)
 )
-
-# 9
-
 print(loss(theta_bfgs_scaled, x_scaled, y_train, 0))
 
 # 10
