@@ -82,6 +82,14 @@ data = sio.loadmat('ex5data2.mat')
 X = data.get('X')
 y = data.get('y')
 
+def gauss_kernel_carried(sigma):
+    def gauss_kernel(x1, x2):
+        sigma_squared = np.power(sigma, 2)
+        matrix = np.power(x1-x2, 2)
+
+        return np.exp(-np.sum(matrix)/(2*sigma_squared))
+
+    return gauss_kernel
 
 #7-8-9
 m2,n2 = X.shape[0],X.shape[1]
@@ -116,6 +124,10 @@ pos,neg= (y==1).reshape(m3,1), (y==0).reshape(m3,1)
 
 vals = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
 C, gamma = dataset3Params(X, y.ravel(), Xval, yval.ravel(),vals)
+
+print('Best C:', C)
+print('Best gamma:', gamma)
+
 classifier4 = SVC(C=C,gamma=gamma)
 classifier4.fit(X,y.ravel())
 
