@@ -96,7 +96,7 @@ def loss_plot(X, y):
     u, v = np.meshgrid(u, v)
 
     # Plot the surface.
-    surf = ax.plot_surface(u, v, z,
+    ax.plot_surface(u, v, z,
                            linewidth=0, antialiased=False)
     plt.show()
 
@@ -118,15 +118,15 @@ def loss_contour_plot(X, y):
     u, v = np.meshgrid(u, v)
 
     # Plot the contour plot.
-    CS = ax.contour(u, v, z, levels=[20, 50, 125, 300, 750, 1800, 4500, 11250, 28000])
-    # ax.clabel(CS, inline=1, fontsize=10)
+    ax.contour(u, v, z, levels=[20, 50, 125, 300, 750, 1800, 4500, 11250, 28000])
+
     plt.show()
 
 # 1
 data = pd.read_csv('ex1data1.txt', header=None)
 num_columns = data.shape[1]
 
-panda_X = data.iloc[:, 0:num_columns - 1]  # [ slice_of_rows, slice_of_columns ]
+panda_X = data.iloc[:, 0:num_columns - 1]
 panda_X.insert(0, 'Ones', 1)
 X = panda_X.values
 y = data[num_columns - 1].values
@@ -153,11 +153,11 @@ loss_contour_plot(X,y)
 data = pd.read_csv('ex1data2.txt', header=None)
 num_columns = data.shape[1]
 y = data[num_columns - 1].values
-
+X = data.iloc[:, 0:num_columns - 1]
 
 #7
 min_max_scaler = preprocessing.MinMaxScaler()
-x_scaled = min_max_scaler.fit_transform(data.iloc[:, 0:num_columns - 1])
+x_scaled = min_max_scaler.fit_transform()
 df = pd.DataFrame(x_scaled)
 df.insert(0, 'Ones', 1)
 x_scaled = df.values

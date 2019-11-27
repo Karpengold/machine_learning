@@ -78,69 +78,64 @@ def findClosestCentroids(X, centroids):
 
 
 
-# #1
-# data = sio.loadmat('ex6data1.mat')
-# X = data.get('X')
-# plt.scatter(X [:,0], X [:,1])
-# plt.show()
-#
-# K = 3
-# #2
-# init_centroids = get_random_centoids(K ,1, 6)
-# #3
-# idx = findClosestCentroids(X, init_centroids)
-# #4
-# centroids = computeCentroids(X, idx, K)
-# print("Centroids computed after initial finding of closest centroids:\n", centroids)
-# print(idx[:3])
-# #5
-# k_means(X,idx,K,10)
-#
-# #6
-# m,n = X.shape[0],X.shape[1]
-# plotKmeans(X, init_centroids, idx, K,10)
+#1
+data = sio.loadmat('ex6data1.mat')
+X = data.get('X')
+plt.scatter(X [:,0], X [:,1])
+plt.show()
+
+K = 3
+#2
+init_centroids = get_random_centoids(K ,1, 6)
+#3
+idx = findClosestCentroids(X, init_centroids)
+#4
+centroids = computeCentroids(X, idx, K)
+print("Centroids computed after initial finding of closest centroids:\n", centroids)
+print(idx[:3])
+#5
+k_means(X,idx,K,10)
+
+#6
+m,n = X.shape[0],X.shape[1]
+plotKmeans(X, init_centroids, idx, K,10)
 
 
-# #7
-# data = sio.loadmat('bird_small.mat')
-# X = data.get('A')
-#
-#
-#
-#
-#
-#
-#
-# def kMeansInitCentroids(X, K):
-#     """
-#     This function initializes K centroids that are to beused in K-Means on the dataset X
-#     """
-#     m, n = X.shape[0], X.shape[1]
-#     centroids = np.zeros((K, n))
-#
-#     for i in range(K):
-#         centroids[i] = X[np.random.randint(0, m + 1), :]
-#
-#     return centroids
-# X2 = (X/255).reshape(128*128,3)
-# K2 = 16
-# num_iters = 10
-# #8
-# # preprocess and reshape the image
-# X2 = (X / 255).reshape(128 * 128, 3)
-# centroids2, idx2 = k_means(X2, kMeansInitCentroids(X2, K2), K2, num_iters)
-# m2,n2 = X.shape[0],X.shape[1]
-# X2_recovered = X2.copy()
-#
-# #9
-# for i in range(1,K2+1):
-#     X2_recovered[(idx2==i).ravel(),:] = centroids2[i-1]
-# # Reshape the recovered image into proper dimensions
-# X2_recovered = X2_recovered.reshape(128,128,3)
-# # Display the image
-# import matplotlib.image as mpimg
-# fig, ax = plt.subplots(1,2)
-# ax[0].imshow(X2.reshape(128,128,3))
-# ax[1].imshow(X2_recovered)
-# plt.show()
+#7
+data = sio.loadmat('bird_small.mat')
+X = data.get('A')
+
+
+def kMeansInitCentroids(X, K):
+    """
+    This function initializes K centroids that are to beused in K-Means on the dataset X
+    """
+    m, n = X.shape[0], X.shape[1]
+    centroids = np.zeros((K, n))
+
+    for i in range(K):
+        centroids[i] = X[np.random.randint(0, m + 1), :]
+
+    return centroids
+X2 = (X/255).reshape(128*128,3)
+K2 = 16
+num_iters = 10
+#8
+# preprocess and reshape the image
+X2 = (X / 255).reshape(128 * 128, 3)
+centroids2, idx2 = k_means(X2, kMeansInitCentroids(X2, K2), K2, num_iters)
+m2,n2 = X.shape[0],X.shape[1]
+X2_recovered = X2.copy()
+
+#9
+for i in range(1,K2+1):
+    X2_recovered[(idx2==i).ravel(),:] = centroids2[i-1]
+# Reshape the recovered image into proper dimensions
+X2_recovered = X2_recovered.reshape(128,128,3)
+# Display the image
+import matplotlib.image as mpimg
+fig, ax = plt.subplots(1,2)
+ax[0].imshow(X2.reshape(128,128,3))
+ax[1].imshow(X2_recovered)
+plt.show()
 
